@@ -46,7 +46,7 @@ public class DataRequestPayload {
 	@JsonProperty("documents")
 	private List<Documents> documents;
 	@JsonProperty("unassigned_pages")
-	private List<Object> unassigned_pages;
+	private List<Pages> unassigned_pages;
 
 	public int getId() {
 		return id;
@@ -160,11 +160,11 @@ public class DataRequestPayload {
 		this.documents = documents;
 	}
 
-	public List<Object> getUnassigned_pages() {
+	public List<Pages> getUnassigned_pages() {
 		return unassigned_pages;
 	}
 
-	public void setUnassigned_pages(List<Object> unassigned_pages) {
+	public void setUnassigned_pages(List<Pages> unassigned_pages) {
 		this.unassigned_pages = unassigned_pages;
 	}
 	

@@ -23,8 +23,10 @@ public interface PdfBookmarkConstants {
 	
 	String success_message = "Successfully Bookmarked Pdf Document";
 	
-	String s3_bucket_pdf_files_location = "C:\\Users\\Administrator\\Documents\\GenBookmarks\\MultipleDocs\\";
-	String MergedDocumentPath = "C:\\Users\\Administrator\\Documents\\GenBookmarks\\MergeMultipleDocs\\MergedPdf.pdf";//How to generate the Merged File Name(As of now Hardcoding)
+	//String s3_bucket_pdf_files_location = "C:\\Users\\Administrator\\Documents\\GenBookmarks\\MultipleDocs\\";
+	String s3_bucket_pdf_files_location = "C:\\Users\\Administrator\\Documents\\GenBookmarks\\NewTestFile\\";
+	//String MergedDocumentPath = "C:\\Users\\Administrator\\Documents\\GenBookmarks\\MergeMultipleDocs\\MergedPdf.pdf";//How to generate the Merged File Name(As of now Hardcoding)
+	String MergedDocumentPath = "C:\\Users\\Administrator\\Documents\\GenBookmarks\\MergeMultipleDocs\\";
 	
 	String generateCSV = "GenCSV";
 	String bookMarkPdf = "BookMarkPdf";
@@ -33,5 +35,9 @@ public interface PdfBookmarkConstants {
 	
 	String NEWLINE = "\n";
 	String COMPLETE = "COMPLETE";
+	
+	long PDF_TIMEOUT=80;
+	
+	String Authorization_Token = "Token 984910a508f30eb63dfe404aa8e2d4acf505ae14";
 	
 }

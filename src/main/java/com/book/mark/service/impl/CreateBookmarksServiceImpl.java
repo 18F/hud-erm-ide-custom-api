@@ -68,19 +68,35 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			if(submission_files != null && submission_files.size()>0) {build_file_path += submission_files.get(0).getUrl();}
 			logger.info("Path to download URL "+build_file_path);*/
 			//for(SubmissionFiles sf : submission_files) {System.out.println(sf.toString());}
+			HashMap<String, Integer> mapIncrementedValues = new HashMap<String, Integer>();
 			
 			LinkedHashMap<String, List<String>> orderedMap = new LinkedHashMap<String, List<String>>();
 			List<Documents> documents = dataRequestPayload.getDocuments();
 			for(Documents docs : documents) {
 				String layout_name = docs.getLayout_name();
-				//ArrayList<String> layout_list = new ArrayList<String>();
 				ArrayList<String> pages_list = new ArrayList<String>();
 				List<Pages> pages = docs.getPages();
 				for(Pages p : pages) {
 					pages_list.add(String.valueOf(p.getFile_page_number())+"-"+String.valueOf(p.getLayout_page_number()));
-					//layout_list.add(String.valueOf(p.getLayout_page_number()));
 				}
-				orderedMap.put(layout_name, pages_list);
+				//orderedMap.put(layout_name, pages_list);
+				if(orderedMap.containsKey(layout_name)) {
+					int lastIncrementedValue = mapIncrementedValues.get(layout_name);
+					orderedMap.put(layout_name+"_"+(lastIncrementedValue+1), pages_list);
+					mapIncrementedValues.put(layout_name, lastIncrementedValue+1);
+					//orderedMap.put(layout_name+"_Duplicate", pages_list);
+				}else {
+					mapIncrementedValues.put(layout_name, 0);
+					orderedMap.put(layout_name, pages_list);
+				}
+			}
+			List<Pages> unAssignedPages = dataRequestPayload.getUnassigned_pages();
+			if(unAssignedPages != null && unAssignedPages.size()>0) {
+				ArrayList<String> pages_list = new ArrayList<String>();
+				for(Pages p : unAssignedPages) {
+					pages_list.add(String.valueOf(p.getFile_page_number())+"-"+String.valueOf(p.getFile_page_number()));
+				}
+				orderedMap.put("UnAssigned", pages_list);
 			}
 			logger.info("Required Mapping List - ",orderedMap);
 			
@@ -90,9 +106,18 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			//InputStream in = new URL(build_file_path).openStream();
 			Files.copy(in, Paths.get(writePdfFromUrl), StandardCopyOption.REPLACE_EXISTING);*/
 
-			logger.info("Read data for the pdf without bookmarks started at location "+MergedDocumentPath);
+			File fileTemp = new File(s3_bucket_pdf_files_location);
+			String[] fileList1 = fileTemp.list();
+			String genName = "";
+			for(String name : fileList1) {
+				genName += name.replace(".pdf", "")+"_";
+			}
+			genName += "BookMarked.pdf";
+			String mergedDocPath = MergedDocumentPath+genName;
+			
+			logger.info("Read data for the pdf without bookmarks started at location "+mergedDocPath);
 			PDDocument writeDoc = new PDDocument();
-			PDDocument readDoc = PDDocument.load(new File(MergedDocumentPath));
+			PDDocument readDoc = PDDocument.load(new File(mergedDocPath));
 			int noOfPages = readDoc.getNumberOfPages();
 			logger.info("No of Pages observed in the pdf are - "+noOfPages);
 			
@@ -161,7 +186,8 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			pagesOutline.openNode();
 			outline.openNode();
 			
-			String writeToPath = generateFileName(MergedDocumentPath);
+			//String writeToPath = generateFileName(MergedDocumentPath);
+			String writeToPath = mergedDocPath;
 
 			writeDoc.save(new File(writeToPath));
 			logger.info("Write Data to the pdf with bookmarks completed at location "+writeToPath);
@@ -214,8 +240,8 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				logger.info("Building url is done for given submissionId as "+build_url);
 
 				HttpHeaders headers = new HttpHeaders();
-				headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
-				//headers.set("Authorization", "Token 984910a508f30eb63dfe404aa8e2d4acf505ae14");
+				//headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
+				headers.set("Authorization", Authorization_Token);
 
 				HttpEntity<String> httpReqEntity = new HttpEntity<String>(headers);
 				RestTemplate restTemplate = new RestTemplate();
@@ -294,8 +320,8 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-			//headers.set("Authorization", "Token 6473f7df6f524232e012c96c74217f37872426c4");
-			headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
+			//headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
+			headers.set("Authorization", Authorization_Token);
 			logger.info("HttpHeader values added...");
 			
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -363,11 +389,13 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		try {
 			String build_url = hostName_external+ext_id;
 			HttpHeaders headers = new HttpHeaders();
-			headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
+			//headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
+			headers.set("Authorization", Authorization_Token);
 			logger.info("HttpHeader values added...");
 			
 			Map<String, String> body = new HashMap<String, String>();
-			body.put("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
+			//body.put("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
+			headers.set("Authorization", Authorization_Token);
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> response = restTemplate.exchange(build_url, HttpMethod.GET, requestEntity, String.class);
@@ -414,21 +442,33 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-			headers.set("Authorization", "Token 984910a508f30eb63dfe404aa8e2d4acf505ae14");
+			headers.set("Authorization", Authorization_Token);
 			//headers.set("externalId", extId);
 			logger.info("HttpHeader values added...");
 			
-			PDFMergerUtility PDFMerger = new PDFMergerUtility();
-			PDFMerger.setDestinationFileName(MergedDocumentPath);
+			File fileTemp = new File(s3_bucket_pdf_files_location);
+			String[] fileList1 = fileTemp.list();
+			String genName = "";
+			for(String name : fileList1) {
+				if(name != null && name.contains(".pdf"))
+					genName += name.replace(".pdf", "")+"_";
+			}
+			genName += "BookMarked.pdf";
+			String mergedDocPath = MergedDocumentPath+genName;
+			
 			File file = new File(s3_bucket_pdf_files_location);
 	        String[] fileList = file.list();
-	        for(String name : fileList) {
-	        	java.io.File file1 = new java.io.File(s3_bucket_pdf_files_location+name);
-	        	PDDocument doc = PDDocument.load(file1);
-	        	PDFMerger.addSource(file1);
-	        	doc.close();
-	        }
-	        PDFMerger.mergeDocuments();
+	        //if(fileList != null && fileList.length>1) {
+				PDFMergerUtility PDFMerger = new PDFMergerUtility();
+				PDFMerger.setDestinationFileName(mergedDocPath);
+	        	for(String name : fileList) {
+		        	java.io.File file1 = new java.io.File(s3_bucket_pdf_files_location+name);
+		        	PDDocument doc = PDDocument.load(file1);
+		        	PDFMerger.addSource(file1);
+		        	doc.close();
+		        }
+		        PDFMerger.mergeDocuments();
+	        //}
 	        
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 			//List<Resource> resourceList = getUserFileResourceList(s3_bucket_pdf_files_location);
@@ -437,9 +477,9 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				body.add("file", resource);
 			}*/
 			//logger.info("Files dynamically added from location - "+s3_bucket_pdf_files_location);
-			body.add("file", new FileSystemResource(new java.io.File(MergedDocumentPath)));
+			body.add("file", new FileSystemResource(new java.io.File(mergedDocPath)));
 			body.add("external_id", extId);
-			logger.info("File added from location - "+MergedDocumentPath);
+			logger.info("File added from location - "+mergedDocPath);
 			
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 			RestTemplate restTemplate = new RestTemplate();
@@ -450,11 +490,11 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			}catch(HttpClientErrorException hceex) {
 				logger.error(hceex.getMessage());
 				if(hceex.getMessage() != null) {
-					String message = hceex.getMessage().replace("409 Conflict:","").replace("[", "").replace("]", "").trim();
+					String[] message = hceex.getMessage().toString().split("\"submission_id\"");
 					//UnMarshaller unMarshaller = new UnMarshaller();
 					//ErrMsg errMsg=unMarshaller.unMarshallErrMessage(message);
 					RespPayload respPayload = new RespPayload();
-					respPayload.setMessage(message);
+					respPayload.setMessage("A submission with this external identifier already exists"+message[1].replace("}", "").replace("]", "").replace("\"", ""));
 					return new ResponseEntity<RespPayload>(respPayload, HttpStatus.CONFLICT);
 				}
 			}catch(Exception ex) {
@@ -467,7 +507,7 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 					UnMarshaller unMarshaller = new UnMarshaller();
 					SubmissionId submissionId = unMarshaller.unMarshallSubmissionId(response.getBody());
 					logger.info("Generated Submission ID value is "+submissionId.getSubmissionId());
-					TimeUnit.SECONDS.sleep(20);
+					TimeUnit.SECONDS.sleep(PDF_TIMEOUT);
 					genBookmarks(submissionId.getSubmissionId(),todoItem);
 				} else {
 					logger.error("API Response BODY from URL - "+hostName+" is null, cannot proceed further.");
