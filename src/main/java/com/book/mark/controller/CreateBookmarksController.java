@@ -106,4 +106,18 @@ public class CreateBookmarksController {
 		return respEnt;
 	}
 	
+	@PostMapping(value = "/submitPdf")
+	public ResponseEntity processData(@RequestBody DataProcessingReq dataProcReq) {
+		if(StringUtils.isEmpty(dataProcReq) || StringUtils.isEmpty(dataProcReq.getExternalId())) {
+			//Map<String,List<String>> data = new HashMap<String, List<String>>();
+			List<String> list = new ArrayList<String>();
+			list.add("External Id is Required.");
+			DataProcessingResp dataProcResp = new DataProcessingResp();
+			dataProcResp.setMessage(list);
+			return new ResponseEntity<DataProcessingResp>(dataProcResp, HttpStatus.BAD_REQUEST);
+		}
+		ResponseEntity response = dataProcessingService.processData(dataProcReq);
+		return response;
+	}
+	
 }
