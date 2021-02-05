@@ -186,6 +186,25 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			pagesOutline.openNode();
 			outline.openNode();
 			
+			List<Pages> unassignedPages = dataRequestPayload.getUnassigned_pages();
+			if(unassignedPages != null && unassignedPages.size() > 0) {
+				ArrayList<String> unAssigPageList = new ArrayList<String>();
+				for(int p=0;p<unassignedPages.size();p++) {
+					Pages page = unassignedPages.get(p);
+					unAssigPageList.add(String.valueOf(page.getFile_page_number())+"-DUMMYSTRING");
+				}
+				orderedMap.put("UnAssigned", unAssigPageList);
+			}
+			/** CODE ADDED FOR UNASSIGNED PAGES*/
+
+			File fileTemp = new File(String.valueOf(s3BucketPdfFilesLocation));
+			String[] fileList1 = fileTemp.list();
+			String getName = "";
+			for(String name : fileList1) {
+				getName += name;
+			}
+			String initialFileLocation = s3BucketPdfFilesLocation+getName;
+
 			//String writeToPath = generateFileName(MergedDocumentPath);
 			String writeToPath = mergedDocPath;
 
@@ -194,6 +213,22 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			//System.out.println("Write Data to the pdf with bookmarks completed at location "+writePdfPathNew);
 			writeDoc.close();
 			readDoc.close();
+			try {
+					Region region = Region.US_GOV_WEST_1;
+					
+					S3Client s3 = S3Client.builder()
+							.credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+							.region(region)
+							.build();
+					PutObjectRequest objectRequest = PutObjectRequest.builder()
+							.bucket("ide-sandb-temp-microservice-bucket")
+							.key("APIdocs/ExtractFormNames/"+title+"_"+externalId+".pdf")
+							.build();
+					s3.putObject(objectRequest, software.amazon.awssdk.core.sync.RequestBody.fromFile(Paths.get(extractFormnamesPath+title+"_"+externalId+".pdf")));
+
+				}catch(Exception e) {
+					logger.error("Exception occurred while AWS connection establishment", e);
+				}
 			
 			logger.info("JSON Parsing Finished");
 		}catch(Exception e) {
