@@ -96,7 +96,7 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				for(Pages p : unAssignedPages) {
 					pages_list.add(String.valueOf(p.getFile_page_number())+"-"+String.valueOf(p.getFile_page_number()));
 				}
-				orderedMap.put("UnAssigned", pages_list);
+				orderedMap.put("Unassigned", pages_list);
 			}
 			logger.info("Required Mapping List - ",orderedMap);
 			
@@ -193,7 +193,7 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 					Pages page = unassignedPages.get(p);
 					unAssigPageList.add(String.valueOf(page.getFile_page_number())+"-DUMMYSTRING");
 				}
-				orderedMap.put("UnAssigned", unAssigPageList);
+				orderedMap.put("Unassigned", unAssigPageList);
 			}
 			/** CODE ADDED FOR UNASSIGNED PAGES*/
 
