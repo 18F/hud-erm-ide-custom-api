@@ -432,6 +432,7 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			//body.put("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
 			headers.set("Authorization", Authorization_Token);
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+					HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<?> response = restTemplate.exchange(build_url, HttpMethod.GET, requestEntity, String.class);
 			if(response != null) {
@@ -439,9 +440,27 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				if(respBody != null) {
 					UnMarshaller unMarshaller = new UnMarshaller();
 					extObj = unMarshaller.unMarshallExternalIdResponse(respBody);
-					if(extObj != null)
+					if(extObj != null) {
+						String url = extObj.getSupervision_url();
+						if(url == null) {
+							extObj.setSupervision_url(url);
+							bw.write("LayoutName,"+layout_name+NEWLINE);
+						for(DocumentFields docField : documentFields) {
+						String name = docField.getName();
+						Transcription transcription = docField.getTranscription();
+						String normalized = transcription.getNormalized();
+						bw.write(name+","+normalized+NEWLINE);
+						}
+						else
+						{
+							url = url_const_getstatus+url;
+							extObj.setSupervision_url(url);
+							Transcription transcription = docField.getTranscription();
+						String normalized = transcription.getNormalized();
+						bw.write(name+","+normalized+NEWLINE);
+						}
 						logger.info(extObj.toString());
-					else {
+					} else {
 						logger.error("unMarshallExternalIdResponse is null, cannot proceed further.");
 					}
 				}else {
