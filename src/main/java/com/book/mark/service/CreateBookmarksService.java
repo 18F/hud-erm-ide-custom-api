@@ -33,7 +33,7 @@ public ResponseEntity<?> genStateByExternalId(@QueryParam("externalId") String e
 		ResponseEntity<ExternalIdStatus> respEnt = createBookmarksService.genStateByExternalId(externalId);
 		if (respEnt.getBody().getExternal_id() == null ) {
 			RespPayload respPayload = new RespPayload();
-		respPayload.setMessage("external ID doesn't exist");
+		respPayload.setMessage("External ID doesn't exist");
 		
 			 return new ResponseEntity<RespPayload>(respPayload, HttpStatus.OK) ;
 		}
