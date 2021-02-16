@@ -25,6 +25,22 @@ private ByteBuffer writeJsonDatatoS3(String externalId,String respData) throws I
 		//byte[] bytes = Files.readAllBytes(Paths.get("C:\\Users\\Administrator\\Documents\\GenBookmarks\\Json_Data\\Sam10025.json"));
 		return ByteBuffer.wrap(bytes);
 	}
+
+public ResponseEntity<?> genStateByExternalId(@QueryParam("externalId") String externalId) {
+		int lastIncrementedValue = mapIncrementedValues.get(layout_name);
+		orderedMap.put(layout_name+"_"+(lastIncrementedValue+1), pages_list);
+		mapIncrementedValues.put(layout_name, lastIncrementedValue+1);
+		ResponseEntity<ExternalIdStatus> respEnt = createBookmarksService.genStateByExternalId(externalId);
+		if (respEnt.getBody().getExternal_id() == null ) {
+			RespPayload respPayload = new RespPayload();
+		respPayload.setMessage("external ID doesn't exist");
+		
+			 return new ResponseEntity<RespPayload>(respPayload, HttpStatus.OK) ;
+		}
+		else
+		    return respEnt;
+	}
+
 public String getSubmissionId( MultipartFile uploadfile,String extId){
 
 		String s3BucketPdfFilesLocation = env.getProperty("s3_bucket_pdf_files_location");
