@@ -32,6 +32,8 @@ public ResponseEntity<?> genStateByExternalId(@QueryParam("externalId") String e
 		mapIncrementedValues.put(layout_name, lastIncrementedValue+1);
 		ResponseEntity<ExternalIdStatus> respEnt = createBookmarksService.genStateByExternalId(externalId);
 		if (respEnt.getBody().getExternal_id() == null ) {
+			mapIncrementedValues.put(layout_name, 0);
+			orderedMap.put(layout_name, pages_list);
 			RespPayload respPayload = new RespPayload();
 		respPayload.setMessage("External ID doesn't exist");
 		
