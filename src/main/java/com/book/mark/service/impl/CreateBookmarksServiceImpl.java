@@ -358,14 +358,36 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			//headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
 			headers.set("Authorization", Authorization_Token);
 			logger.info("HttpHeader values added...");
-			
+			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+			body.add("file", new FileSystemResource(mergedDocPath));
+			body.add("external_id", extId);
+			body.add("machine_only", machineOnly);
+
+			HttpHeaders headers = new HttpHeaders();
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 			List<Resource> resourceList = getUserFileResourceList(s3_bucket_pdf_files_location);
 			for(Resource resource : resourceList) {
 				body.add("file", resource);
 			}
 			logger.info("Files dynamically added from location - "+s3_bucket_pdf_files_location);
-			
+				String hyperScienceResponse = getSubmissionId(file,dataProcReq.getExternalId(),dataProcReq.getAcceptPartialResults());
+			if(hyperScienceResponse == null || (hyperScienceResponse != null && hyperScienceResponse.equalsIgnoreCase("Failure")) ||
+					(hyperScienceResponse != null && hyperScienceResponse.startsWith("A submission"))) {
+				dataProcessingResp.setExternalId(dataProcReq.getExternalId());
+				list.add(hyperScienceResponse);
+				dataProcessingResp.setMessage(list);
+				return new ResponseEntity(dataProcessingResp, HttpStatus.OK);
+			}
+			UnMarshaller unMarshaller = new UnMarshaller();
+			SubmissionId submissionId = unMarshaller.unMarshallSubmissionId(hyperScienceResponse);
+			if(orderedMap.containsKey(layout_name)) {
+					int lastIncrementedValue = mapIncrementedValues.get(layout_name);
+					orderedMap.put(layout_name+"_"+(lastIncrementedValue+1), pages_list);
+					mapIncrementedValues.put(layout_name, lastIncrementedValue+1);
+				}else {
+					mapIncrementedValues.put(layout_name, 0);
+					orderedMap.put(layout_name, pages_list);
+				}
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 			RestTemplate restTemplate = new RestTemplate();
 			logger.info("Rest API Call Started...");
@@ -398,6 +420,11 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				if(extObj == null || extObj.getState() == null) {
 					respPayload.setMessage("External Id Not Found");
 					return new ResponseEntity<RespPayload>(respPayload, HttpStatus.OK);
+					PDDocumentOutline outline = new PDDocumentOutline();
+			writeDoc.getDocumentCatalog().setDocumentOutline(outline);
+			PDOutlineItem pagesOutline = new PDOutlineItem();
+			pagesOutline.setTitle("All Pages");
+			outline.addLast(pagesOutline);
 				}
 				if(extObj != null) {
 					if(extObj.getState() != null && !extObj.getState().equalsIgnoreCase(COMPLETE)) {
