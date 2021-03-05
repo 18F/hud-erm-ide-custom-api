@@ -14,29 +14,29 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
 
-    working_directory: ~/repo
+    #working_directory: ~/repo
 
-    environment:
+    #environment:
       # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
+      #JVM_OPTS: -Xmx3200m
+      #TERM: dumb
 
     steps:
       - checkout
 
       # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
+      #- restore_cache:
+       #   keys:
+        #    - v1-dependencies-{{ checksum "build.gradle" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+         #   - v1-dependencies-
+      - run: chmod +x mvnw 
 
-      - run: gradle dependencies
+workflows:
+  version: 2
 
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+  build:
+    jobs:
+      - build
 
-      # run tests!
-      - run: gradle test
+
