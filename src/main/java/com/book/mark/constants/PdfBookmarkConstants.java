@@ -6,8 +6,10 @@ public interface PdfBookmarkConstants {
 	String FAILED = "FAILED";
 
 	//String url_const = "http://13.72.109.50";
-	String url_const = "https://sandb-ide.appsquared.io/";
-	String url_const_getstatus = "https://sandb-ide.appsquared.io";
+	//String url_const = "https://sandb-ide.appsquared.io/";
+	//String url_const_getstatus = "https://sandb-ide.appsquared.io";
+	String url_const = "https://ide-sandb2.appsquared.io/";
+	String url_const_getstatus = "https://ide-sandb2.appsquared.io";
 	
 	
 	//String readPdfPathNew = "C:\\Users\\Administrator\\Documents\\Raj\\Bookmarks\\1004_Scanned_0914.pdf";
@@ -15,14 +17,14 @@ public interface PdfBookmarkConstants {
 	
 	
 	//String hostName = "http://13.72.109.50/api/v5/submissions";
-	String hostName = "https://sandb-ide.appsquared.io/api/v5/submissions";
+	String hostName = "https://ide-sandb2.appsquared.io/api/v5/submissions";
 	String urlAppender = "?flat=false";
 	
 	//String hostName_genSubId = "http://13.72.109.50/api/v5/submissions/";
-	String hostName_genSubId = "https://sandb-ide.appsquared.io/api/v5/submissions/";
+	String hostName_genSubId = "https://ide-sandb2.appsquared.io/api/v5/submissions/";
 	
 	//String hostName_external = "http://13.72.109.50/api/v5/submissions/external/";
-	String hostName_external = "https://sandb-ide.appsquared.io/api/v5/submissions/external/";
+	String hostName_external = "https://ide-sandb2.appsquared.io/api/v5/submissions/external/";
 	
 	String success_message = "Successfully Bookmarked Pdf Document";
 	
@@ -46,7 +48,10 @@ public interface PdfBookmarkConstants {
 	
 	long PDF_TIMEOUT=80;
 	
-	String Authorization_Token = "Token 984910a508f30eb63dfe404aa8e2d4acf505ae14";
+	long MACHINE_ONLY_PDF_TIMEOUT=240;
+	
+	//String Authorization_Token = "Token 984910a508f30eb63dfe404aa8e2d4acf505ae14";
+	String Authorization_Token = "Token 6ee7928c2b2e2a91a81a516a3df46803809e6ecb";
 	
 	String AWS_BUCKET_NAME = "ide-sandb-temp-microservice-bucket";
 	

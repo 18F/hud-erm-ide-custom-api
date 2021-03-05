@@ -18,11 +18,16 @@ public class ExternalIdStatus implements Serializable{
 	private String state;
 	@JsonProperty("substate")
 	private String substate;
+	@JsonProperty("supervision_url")
+	private String supervision_url;
+	private String message;
+
+	
+	
 	/*private List<Object> exceptions;
 	private boolean halted;
 	private String start_time;
 	private String complete_time;
-	private String supervision_url;
 	private String metadata;
 	private boolean data_deleted;*/
 	public int getId() {
@@ -49,6 +54,7 @@ public class ExternalIdStatus implements Serializable{
 	public void setSubstate(String substate) {
 		this.substate = substate;
 	}
+	
 	/*public List<Object> getExceptions() {
 		return exceptions;
 	}
@@ -92,9 +98,22 @@ public class ExternalIdStatus implements Serializable{
 		this.data_deleted = data_deleted;
 	}*/
 	
+	public String getSupervision_url() {
+		return supervision_url;
+	}
+	public void setSupervision_url(String supervision_url) {
+		this.supervision_url = supervision_url;
+	}
 	@Override
 	public String toString() {
-		return "{id:"+this.id+",external_id:"+this.external_id+",state:"+this.state+",substate:"+this.substate+"}";
+		return "{id:"+this.id+",external_id:"+this.external_id+",state:"+this.state+",substate:"+this.substate+",supervision_url:"+this.supervision_url+"}";
 	}
+	public void setMessage(String string) {
+		// TODO Auto-generated method stub
+		this.message = string;
+	}
+	
+
+	
 	
 }
