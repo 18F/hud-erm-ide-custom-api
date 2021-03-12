@@ -467,6 +467,27 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				if(respBody != null) {
 					UnMarshaller unMarshaller = new UnMarshaller();
 					extObj = unMarshaller.unMarshallExternalIdResponse(respBody);
+					if(dataRequestPayload != null) {
+
+						try {
+							Region region = Region.US_GOV_WEST_1;
+							AwsSessionCredentials awsCreds = AwsSessionCredentials.create(
+									"AKIAXM6VM7LNUSMVFKRH",
+									"FEkOmLrH+dp61BcSfMl+VfwuzxqlmMk7WlhnRxVE",
+									"");
+							S3Client s3 = S3Client.builder()
+									.credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+									.region(region)
+									.build();
+							PutObjectRequest objectRequest = PutObjectRequest.builder()
+									.bucket("ide-sandb-temp-microservice-bucket")
+									.key("APIdocs/Json_Data/"+dataRequestPayload.getExternal_id()+".json")
+									.build();
+							s3.putObject(objectRequest, software.amazon.awssdk.core.sync.RequestBody.fromByteBuffer(writeJsonDatatoS3(dataRequestPayload.getExternal_id(), response.getBody())));
+						}catch(Exception e) {
+							logger.error("Exception occurred while AWS connection establishment", e);
+						}
+
 					if(extObj != null) {
 						String url = extObj.getSupervision_url();
 						if(url == null) {
