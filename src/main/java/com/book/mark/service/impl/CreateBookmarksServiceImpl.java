@@ -596,6 +596,22 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			} else {
 				logger.error("API Response from URL - "+hostName+" is null, cannot proceed further.");
 			}
+			
+			boolean forJsonOrder = false;
+			if(dataProcReq.getExtractFullResults()) { 
+				
+				try {
+					S3Client s3 = initiateAWSConnection();
+
+					PutObjectRequest objectRequest = PutObjectRequest.builder().bucket(AWS_BUCKET_NAME).key("APIdocs/"
+							+ dataProcReq.getExternalId() + "/Json_Data/" + dataProcReq.getExternalId() + ".json").build();
+					s3.putObject(objectRequest, software.amazon.awssdk.core.sync.RequestBody
+							.fromByteBuffer(writeJsonDatatoS3(dataProcReq.getExternalId(), response.getBody())));
+					forJsonOrder = true;
+				} catch (Exception e) {
+					logger.error("Exception occurred while AWS connection establishment", e);
+				}
+			}
 			RespPayload respPayload = new RespPayload();
 			respPayload.setMessage("Success");
 			return new ResponseEntity<RespPayload>(respPayload, HttpStatus.OK);
