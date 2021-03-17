@@ -337,6 +337,40 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		String newPath = fileReadLocation.replace(fileName, "");
 		return newPath+build_fileName+".pdf";
 	}
+	
+	@PostMapping(value = "/getResultsFiles")
+	public ResponseEntity getResultList(@RequestBody DataProcessingReq dataRequestPayload,
+				  HttpServletResponse response) throws JsonProcessingException {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		if(StringUtils.isEmpty(dataRequestPayload.getExternalId())){ return new
+				ResponseEntity("External Id is Mandatory",HttpStatus.BAD_REQUEST); }
+
+		/*
+		 * Map<String,String> map = objectMapper.readValue(externalId, new
+		 * TypeReference<Map<String,String>>() { });
+		 *
+		 *
+		 * if(StringUtils.isEmpty(externalId)){ return new
+		 * ResponseEntity("External Id is Mandatory",HttpStatus.BAD_REQUEST); }
+		 */
+
+		if(dataRequestPayload!=null){
+			dataProcessingService.processData(dataRequestPayload);
+		}
+
+		if(!resultList.isEmpty() || !(resultList.size() ==0)){
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition",
+					"attachment;filename="+dataRequestPayload.getExternalId()+".zip");
+			response.setStatus(HttpServletResponse.SC_OK);
+
+			
+		return new ResponseEntity("SUccess",HttpStatus.OK); }
+
+
+}
+
 	@Override
 	public List<File> getResultList(String extenalId) {
 
