@@ -338,6 +338,76 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		return newPath+build_fileName+".pdf";
 	}
 	
+	@PostMapping(value = "/getResultsFiles")
+	public ResponseEntity getResultList(@RequestBody DataProcessingReq dataRequestPayload,
+				  HttpServletResponse response) throws JsonProcessingException {
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		if(StringUtils.isEmpty(dataRequestPayload.getExternalId())){ return new
+				ResponseEntity("External Id is Mandatory",HttpStatus.BAD_REQUEST); }
+
+		/*
+		 * Map<String,String> map = objectMapper.readValue(externalId, new
+		 * TypeReference<Map<String,String>>() { });
+		 *
+		 *
+		 * if(StringUtils.isEmpty(externalId)){ return new
+		 * ResponseEntity("External Id is Mandatory",HttpStatus.BAD_REQUEST); }
+		 */
+
+		if(dataRequestPayload!=null){
+			dataProcessingService.processData(dataRequestPayload);
+		}
+
+		if(!resultList.isEmpty() || !(resultList.size() ==0)){
+			response.setContentType("application/octet-stream");
+			response.setHeader("Content-Disposition",
+					"attachment;filename="+dataRequestPayload.getExternalId()+".zip");
+			response.setStatus(HttpServletResponse.SC_OK);
+
+			
+		return new ResponseEntity("SUccess",HttpStatus.OK); }
+
+
+}
+
+	@Override
+	public List<File> getResultList(String extenalId) {
+
+		StringBuilder s3BucketPdfFilesLocation =new StringBuilder();
+
+		StringBuilder location= new StringBuilder();
+		location.append("/var/tmp/resultList/");
+		location.append(extenalId+"/");
+		logger.info("Loaction to store the files after retreiving the files from the AWS -->"+  location);
+
+		S3Client s3 = initiateAWSConnection();
+
+		List<File> files= new ArrayList<>();
+
+		List<GetObjectResponse> s3Objects = new ArrayList<>();
+
+		ListObjectsRequest req = ListObjectsRequest.builder().bucket(AWS_BUCKET_NAME).prefix("APIdocs/"+extenalId+"/").build();
+		ListObjectsResponse response1 = s3.listObjects(req);
+		List<S3Object> listOfS3Obj = response1.contents();//List of Data
+		for(int i=0;i<listOfS3Obj.size();i++) {
+			createResultListDirectory(String.valueOf(location));
+
+			File f = new File(location + fileName);
+			if (f.exists()) {
+				f.delete();
+			}
+			s3Objects.add(s3.getObject(getObjectRequest, Paths.get(location + fileName)));
+
+			//adding Files to the list
+			f = getFiles(String.valueOf(location), fileName);
+			files.add(f);
+		}
+		logger.info("added a total of "+files.size()+" files to the List");
+		return files;
+
+	}
+
 	private String generateCSVFileName(String fileReadLocation,String extId) {
 		/*String pattern = "MMddyyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);

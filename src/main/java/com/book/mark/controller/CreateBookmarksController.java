@@ -20,7 +20,7 @@ import com.book.mark.model.RespPayload;
 import com.book.mark.service.CreateBookmarksService;
 
 @RestController
-@RequestMapping(value = "/bookmark")
+
 public class CreateBookmarksController {
 
 	@Autowired
@@ -106,21 +106,33 @@ public class CreateBookmarksController {
 		return respEnt;
 	}
 	
-		@PostMapping(value = "/submitPdf")
+	@PostMapping(value = "/submitPdf")
 	public ResponseEntity<?> processData(@RequestParam("submissionFileName") MultipartFile file, DataProcessingReq dataProcReq) {
 
-		if (file.isEmpty() && file.getOriginalFilename().contains(".pdf")) {
-			List<String> list = new ArrayList<String>();
-			list.add("File is Required.");
+		
+		  if (file.isEmpty() && file.getOriginalFilename().contains(".pdf")) {
+		  List<String> list = new ArrayList<String>();
+		  list.add("File is Required.");
+		  DataProcessingResp dataProcResp = new DataProcessingResp();
+		  dataProcResp.setMessage("File is Required."); 
+		  return new
+		  ResponseEntity<DataProcessingResp>(dataProcResp, HttpStatus.BAD_REQUEST); 
+		  }
+		 
+
+		if (StringUtils.isEmpty(dataProcReq) || StringUtils.isEmpty(dataProcReq.getExternalId())) {
+			// Map<String,List<String>> data = new HashMap<String, List<String>>();
 			List<String> list = new ArrayList<String>();
 			list.add("External Id is Required.");
 			DataProcessingResp dataProcResp = new DataProcessingResp();
-			dataProcResp.setMessage(list);
+			dataProcResp.setMessage("External Id is Required.");
 			return new ResponseEntity<DataProcessingResp>(dataProcResp, HttpStatus.BAD_REQUEST);
 		}
-		
-		ResponseEntity response = dataProcessingService.processData(dataProcReq);
+		ResponseEntity<?> response = dataProcessingService.saveFileToHyperscience((MultipartFile) file, dataProcReq);
+
 		return response;
 	}
+
+
 	
 }
