@@ -337,7 +337,43 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		String newPath = fileReadLocation.replace(fileName, "");
 		return newPath+build_fileName+".pdf";
 	}
-	
+	@Override
+	public List<File> getResultList(String extenalId) {
+
+		StringBuilder s3BucketPdfFilesLocation =new StringBuilder();
+
+		StringBuilder location= new StringBuilder();
+		location.append("/var/tmp/resultList/");
+		location.append(extenalId+"/");
+		logger.info("Loaction to store the files after retreiving the files from the AWS -->"+  location);
+
+		S3Client s3 = initiateAWSConnection();
+
+		List<File> files= new ArrayList<>();
+
+		List<GetObjectResponse> s3Objects = new ArrayList<>();
+
+		ListObjectsRequest req = ListObjectsRequest.builder().bucket(AWS_BUCKET_NAME).prefix("APIdocs/"+extenalId+"/").build();
+		ListObjectsResponse response1 = s3.listObjects(req);
+		List<S3Object> listOfS3Obj = response1.contents();//List of Data
+		for(int i=0;i<listOfS3Obj.size();i++) {
+			createResultListDirectory(String.valueOf(location));
+
+			File f = new File(location + fileName);
+			if (f.exists()) {
+				f.delete();
+			}
+			s3Objects.add(s3.getObject(getObjectRequest, Paths.get(location + fileName)));
+
+			//adding Files to the list
+			f = getFiles(String.valueOf(location), fileName);
+			files.add(f);
+		}
+		logger.info("added a total of "+files.size()+" files to the List");
+		return files;
+
+	}
+
 	private String generateCSVFileName(String fileReadLocation,String extId) {
 		/*String pattern = "MMddyyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
