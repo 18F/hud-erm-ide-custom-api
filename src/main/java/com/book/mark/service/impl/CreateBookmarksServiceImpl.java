@@ -606,7 +606,16 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			}
 			genName += "BookMarked.pdf";
 			String mergedDocPath = MergedDocumentPath+genName;
-			
+				prsncFormNames = executeTask(dataRequestPayload,"presenceFormNames");
+				if(prsncFormNames.equalsIgnoreCase(SUCCESS)) {
+
+					File file= new File("/var/tmp/GenBookmarks/"+dataRequestPayload.getExternal_id()+"/presenceFormNames/");
+					if(file.exists()){
+						file.delete();
+					}
+					try {
+						FileWriter fw = new FileWriter("/var/tmp/GenBookmarks/" + dataRequestPayload.getExternal_id() + "/presenceFormNames/", true);
+						BufferedWriter bw = new BufferedWriter(fw);
 			File file = new File(s3_bucket_pdf_files_location);
 	        String[] fileList = file.list();
 	        //if(fileList != null && fileList.length>1) {
@@ -651,6 +660,8 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			}catch(Exception ex) {
 				logger.error(ex.getMessage());
 			}
+			
+			
 			//String response1 =  restTemplate.postForObject(hostName, requestEntity, String.class);
 			logger.info("Rest API Call Finished...");
 			if(response != null) {
