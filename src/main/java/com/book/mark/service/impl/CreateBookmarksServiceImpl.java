@@ -354,6 +354,19 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		 * if(StringUtils.isEmpty(externalId)){ return new
 		 * ResponseEntity("External Id is Mandatory",HttpStatus.BAD_REQUEST); }
 		 */
+		
+		String mergedDocPath = mergedDocumentPath+genName;
+
+			File file = new File(String.valueOf(s3BucketPdfFilesLocation));
+			String[] fileList = file.list();
+			//if(fileList != null && fileList.length>1) {
+			PDFMergerUtility PDFMerger = new PDFMergerUtility();
+			PDFMerger.setDestinationFileName(mergedDocPath);
+			for(String name : fileList) {
+				java.io.File file1 = new java.io.File(s3BucketPdfFilesLocation+name);
+				PDDocument doc = PDDocument.load(file1);
+				PDFMerger.addSource(file1);
+				doc.close();
 
 		if(dataRequestPayload!=null){
 			dataProcessingService.processData(dataRequestPayload);
