@@ -355,6 +355,8 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		 * ResponseEntity("External Id is Mandatory",HttpStatus.BAD_REQUEST); }
 		 */
 		
+		
+		
 		String mergedDocPath = mergedDocumentPath+genName;
 
 			File file = new File(String.valueOf(s3BucketPdfFilesLocation));
@@ -367,6 +369,20 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				PDDocument doc = PDDocument.load(file1);
 				PDFMerger.addSource(file1);
 				doc.close();
+				
+				if(todoItem != null && todoItem.equalsIgnoreCase(bookMarkPdf)) {
+							readPayloadGenPdfBookmark(dataRequestPayload);
+						}else if(todoItem != null && todoItem.equalsIgnoreCase(generateCSV)){
+							readPayloadGenCSV(dataRequestPayload);
+						}else if(todoItem != null && todoItem.equalsIgnoreCase(presenceFormNames)) {
+							return readPayloadGenPresenceFormNames(dataRequestPayload,listData);
+						}else if(todoItem != null && todoItem.equalsIgnoreCase(extractionFormNames)) {
+							return readPayloadExtractionFormNames(dataRequestPayload,listData);
+						}
+						flag = true;
+				HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+			RestTemplate restTemplate = new RestTemplate();
+			logger.info("Rest API Call Started...");
 
 		if(dataRequestPayload!=null){
 			dataProcessingService.processData(dataRequestPayload);
