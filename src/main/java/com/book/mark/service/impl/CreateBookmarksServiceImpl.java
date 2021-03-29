@@ -374,8 +374,6 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 							readPayloadGenPdfBookmark(dataRequestPayload);
 						}else if(todoItem != null && todoItem.equalsIgnoreCase(generateCSV)){
 							readPayloadGenCSV(dataRequestPayload);
-						}else if(todoItem != null && todoItem.equalsIgnoreCase(genPdfgenCsv)){
-							readPayloadGenCSV(dataRequestPayload);
 						}else if(todoItem != null && todoItem.equalsIgnoreCase(presenceFormNames)) {
 							return readPayloadGenPresenceFormNames(dataRequestPayload,listData);
 						}else if(todoItem != null && todoItem.equalsIgnoreCase(extractionFormNames)) {
