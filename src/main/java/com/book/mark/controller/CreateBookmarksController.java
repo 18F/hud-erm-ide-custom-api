@@ -142,7 +142,7 @@ public class CreateBookmarksController {
 		
 
 		if(data.isEmpty()){
-			return new	ResponseEntity("Recived Empty Request Parameters",HttpStatus.BAD_REQUEST);
+			return new	ResponseEntity("Received Empty Request Parameters",HttpStatus.BAD_REQUEST);
 		}
 		if(!data.containsKey("externalId")){
 			return new	ResponseEntity("ExternalId is case Sensitive",HttpStatus.BAD_REQUEST);
@@ -173,7 +173,7 @@ public class CreateBookmarksController {
 		}else
 			dataRequestPayload.setExtractionFormNames((List<String>) data.get("extractionFormNames"));
 		
-		return new ResponseEntity("SUccess",HttpStatus.OK); 
+		return new ResponseEntity("Success",HttpStatus.OK); 
 	
 	}
 	
