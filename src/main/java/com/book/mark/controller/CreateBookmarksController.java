@@ -133,6 +133,48 @@ public class CreateBookmarksController {
 		return response;
 	}
 
+              @PostMapping(value = "/getResultsFiles")
+	public ResponseEntity getResultList(@RequestBody Map<String,Object> data,
+				  HttpServletResponse response) throws JsonProcessingException {
 
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		
+
+		if(data.isEmpty()){
+			return new	ResponseEntity("Recived Empty Request Parameters",HttpStatus.BAD_REQUEST);
+		}
+		if(!data.containsKey("externalId")){
+			return new	ResponseEntity("ExternalId is case Sensitive",HttpStatus.BAD_REQUEST);
+		}else{
+			dataRequestPayload.setExternalId(String.valueOf(data.get("externalId")));
+		}
+		if(!data.containsKey("generateBookmarkedPdf")){
+			return new	ResponseEntity("generateBookmarkedPdf is case Sensitive",HttpStatus.BAD_REQUEST);
+		}else{
+			dataRequestPayload.setGenerateBookmarkedPdf((Boolean) data.get("generateBookmarkedPdf"));
+		}
+		if(!data.containsKey("generateCsv")){
+			return new	ResponseEntity("generateCsv is case Sensitive",HttpStatus.BAD_REQUEST);
+		}else{
+			dataRequestPayload.setGenerateCsv((Boolean) data.get("generateCsv"));
+		}
+		if(!data.containsKey("extractFullResults")){
+			return new	ResponseEntity("extractFullResults is case Sensitive",HttpStatus.BAD_REQUEST);
+	   }else{
+			dataRequestPayload.setExtractFullResults((Boolean) data.get("extractFullResults"));
+		}
+		if(!data.containsKey("presenceFormNames")){
+			return new	ResponseEntity("presenceFormNames is case Sensitive",HttpStatus.BAD_REQUEST);
+		}else
+			dataRequestPayload.setPresenceFormNames((List<String>) data.get("presenceFormNames"));
+		if(!data.containsKey("extractionFormNames")){
+			return new	ResponseEntity("extractionFormNames is case Sensitive",HttpStatus.BAD_REQUEST);
+		}else
+			dataRequestPayload.setExtractionFormNames((List<String>) data.get("extractionFormNames"));
+		
+		return new ResponseEntity("SUccess",HttpStatus.OK); 
+	
+	}
 	
 }
