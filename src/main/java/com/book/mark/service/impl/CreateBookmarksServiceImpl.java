@@ -359,6 +359,13 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 		
 		String mergedDocPath = mergedDocumentPath+genName;
 
+			dataProcessingResp.setExternalId(dataProcReq.getExternalId());
+			writeDoc.getDocumentCatalog().setDocumentOutline(outline);
+			PDOutlineItem pagesOutline = new PDOutlineItem();
+			dataProcessingResp.setMessage(hyperScienceResponse);
+				
+		
+		
 			File file = new File(String.valueOf(s3BucketPdfFilesLocation));
 			String[] fileList = file.list();
 			//if(fileList != null && fileList.length>1) {
