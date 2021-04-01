@@ -560,7 +560,37 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			//headers.set("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
 			headers.set("Authorization", Authorization_Token);
 			logger.info("HttpHeader values added...");
+				LinkedHashMap<String, List<String>> orderedMap = new LinkedHashMap<String, List<String>>();
+			List<Documents> documents = dataRequestPayload.getDocuments();
+			for(Documents docs : documents) {
+				String layout_name = docs.getLayout_name();
+				//ArrayList<String> layout_list = new ArrayList<String>();
+				ArrayList<String> pages_list = new ArrayList<String>();
+				List<Pages> pages = docs.getPages();
+				for(Pages p : pages) {
+					pages_list.add(String.valueOf(p.getFile_page_number())+"-"+String.valueOf(p.getLayout_page_number()));
+					
+				}
+				if(orderedMap.containsKey(layout_name)) {
+					int lastIncrementedValue = mapIncrementedValues.get(layout_name);
+					orderedMap.put(layout_name+"_"+(lastIncrementedValue+1), pages_list);
+					mapIncrementedValues.put(layout_name, lastIncrementedValue+1);
+					//orderedMap.put(layout_name+"_Duplicate", pages_list);
+				}else {
+					mapIncrementedValues.put(layout_name, 0);
+					orderedMap.put(layout_name, pages_list);
+				}
+			}
 			
+			List<Pages> unassignedPages = dataRequestPayload.getUnassigned_pages();
+			if(unassignedPages != null && unassignedPages.size() > 0) {
+				ArrayList<String> unAssigPageList = new ArrayList<String>();
+				for(int p=0;p<unassignedPages.size();p++) {
+					Pages page = unassignedPages.get(p);
+					unAssigPageList.add(String.valueOf(page.getFile_page_number())+"-DUMMYSTRING");
+				}
+				orderedMap.put("Unassigned", unAssigPageList);
+			}
 			Map<String, String> body = new HashMap<String, String>();
 			//body.put("Authorization", "Token bca5a45db3ad094449bb6569a69f705ba2a8a5c3");
 			headers.set("Authorization", Authorization_Token);
