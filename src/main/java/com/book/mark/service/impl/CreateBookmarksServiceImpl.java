@@ -588,6 +588,21 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 				for(int p=0;p<unassignedPages.size();p++) {
 					Pages page = unassignedPages.get(p);
 					unAssigPageList.add(String.valueOf(page.getFile_page_number())+"-DUMMYSTRING");
+					
+					if(layoutCount == 0 && entry.getKey().equalsIgnoreCase("unassigned")) {
+						int i=1;
+						pageCount="1";
+						List<String> page_list = entry.getValue();
+						for(String pages:page_list) {
+							if(count==null){
+								count=  String.valueOf((Integer.parseInt(pages.split("-")[0]) + 1));
+							}else {
+								count=count +","+ String.valueOf((Integer.parseInt(pages.split("-")[0]) + 1));
+								pageCount = pageCount + "," + i;
+							}
+						}
+						
+
 				}
 				orderedMap.put("Unassigned", unAssigPageList);
 			}
