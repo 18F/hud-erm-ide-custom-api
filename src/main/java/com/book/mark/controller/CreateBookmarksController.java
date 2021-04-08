@@ -138,12 +138,45 @@ public class CreateBookmarksController {
 				  HttpServletResponse response) throws JsonProcessingException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		
-		
+		Set<String> set = data.keySet();
 
-		if(data.isEmpty()){
-			return new	ResponseEntity("Received Empty Request Parameters",HttpStatus.BAD_REQUEST);
+		for(String value:set){
+			if(value.equalsIgnoreCase("generateBookmarkedPdf")){
+				generateBookMark=true;
+				isEveryFlagFalse=true;
+			}else if(value.equalsIgnoreCase("generateCsv")){
+				generateCSV=true;
+				isEveryFlagFalse=true;
+			}
+			else if(value.equalsIgnoreCase("extractFullResults")){
+				extractFullResult=true;
+				isEveryFlagFalse=true;
+			}
+			else if(value.equalsIgnoreCase("presenceFormNames")){
+				presenceFormName=true;
+				isEveryFlagFalse=true;
+			}
+			else if(value.equalsIgnoreCase("extractionFormNames")){
+				extractionFormName=true;
+				isEveryFlagFalse=true;
+			}
 		}
+
+		if(!data.containsKey("externalId")){
+			return new	ResponseEntity("ExternalId is Required and case Sensitive",HttpStatus.BAD_REQUEST);
+		}else{
+			dataRequestPayload.setExternalId(String.valueOf(data.get("externalId")));
+		}
+
+		if(!isEveryFlagFalse){
+			return new	ResponseEntity("please select one of the parameters generateBookmarkedPdf," +
+					"generateCsv," +
+					" extractFullResults," +
+					"presenceFormNames," +
+					"extractionFormNames."
+					,HttpStatus.BAD_REQUEST);
+		}
+
 		if(!data.containsKey("externalId")){
 			return new	ResponseEntity("ExternalId is case Sensitive",HttpStatus.BAD_REQUEST);
 		}else{
