@@ -197,11 +197,21 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 			}
 			/** CODE ADDED FOR UNASSIGNED PAGES*/
 
+			
 			File fileTemp = new File(String.valueOf(s3BucketPdfFilesLocation));
 			String[] fileList1 = fileTemp.list();
 			String getName = "";
 			for(String name : fileList1) {
 				getName += name;
+			}
+			for(Documents docs : documents) {
+				String layout_name = docs.getLayout_name();
+				if(mapIncrementedValues.containsKey(layout_name)) {
+					int lastIncrementedValue = mapIncrementedValues.get(layout_name);
+					mapIncrementedValues.put(layout_name, lastIncrementedValue+1);
+				} else {
+					mapIncrementedValues.put(layout_name, 1);
+				}
 			}
 			String initialFileLocation = s3BucketPdfFilesLocation+getName;
 
