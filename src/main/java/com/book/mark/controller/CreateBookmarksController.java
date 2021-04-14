@@ -206,6 +206,9 @@ public class CreateBookmarksController {
 		}else
 			dataRequestPayload.setExtractionFormNames((List<String>) data.get("extractionFormNames"));
 		
+				new ResponseEntity("No files found for the given request"
+						,HttpStatus.BAD_REQUEST); 
+				} 
 		return new ResponseEntity("Success",HttpStatus.OK); 
 	
 	}
