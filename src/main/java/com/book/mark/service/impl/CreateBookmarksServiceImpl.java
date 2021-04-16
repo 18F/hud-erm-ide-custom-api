@@ -537,6 +537,10 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 					respPayload.setMessage("External Id Not Found");
 					return new ResponseEntity<RespPayload>(respPayload, HttpStatus.OK);
 					PDDocumentOutline outline = new PDDocumentOutline();
+					layout=layout.substring(0, layout.lastIndexOf(","));
+							list.add("InValid Layout : " + layout);
+							bw.write("InValid Layout : " + layout);
+							bw.newLine();
 			writeDoc.getDocumentCatalog().setDocumentOutline(outline);
 			PDOutlineItem pagesOutline = new PDOutlineItem();
 			pagesOutline.setTitle("All Pages");
