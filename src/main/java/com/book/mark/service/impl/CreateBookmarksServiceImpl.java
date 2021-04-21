@@ -299,12 +299,27 @@ public class CreateBookmarksServiceImpl implements CreateBookmarksService,PdfBoo
 					UnMarshaller unMarshaller = new UnMarshaller();
 					DataRequestPayload dataRequestPayload = unMarshaller.unmarshall(response.getBody());
 
-					/*String build_file_path = "http://13.72.109.50";
-					List<SubmissionFiles> submission_files = dataRequestPayload.getSubmission_files();
-					if(submission_files != null && submission_files.size()>0) {
-						build_file_path += submission_files.get(0).getUrl();
-					}
-					System.out.println("Path to download URL "+build_file_path);*/
+				ArrayList<String> pages_list = new ArrayList<String>();
+				List<Pages> pages = docs.getPages();
+				for(Pages p : pages) {
+					pages_list.add(String.valueOf(p.getFile_page_number())+"-"+String.valueOf(p.getLayout_page_number()));
+					//layout_list.add(String.valueOf(p.getLayout_page_number()));
+				}
+				if(orderedMap.containsKey(layout_name)) {
+					int lastIncrementedValue = mapIncrementedValues.get(layout_name);
+					orderedMap.put(layout_name+"_"+(lastIncrementedValue+1), pages_list);
+					mapIncrementedValues.put(layout_name, lastIncrementedValue+1);
+					//orderedMap.put(layout_name+"_Duplicate", pages_list);
+				}else {
+					mapIncrementedValues.put(layout_name, 0);
+					orderedMap.put(layout_name, pages_list);
+				}
+					
+				for(int index=0;index<page_list.size();index++) {
+					String[] splitData = page_list.get(index).split("-");
+					pagesList.add(String.valueOf(splitData[0]));//FILE_PAGE_NUMBER
+					layoutPageNumList.add(String.valueOf(splitData[1]));//LAYOUT_PAGE_NUMBER
+				}
 					
 					if(dataRequestPayload != null) {
 						if(todoItem != null && todoItem.equalsIgnoreCase(bookMarkPdf)) {
